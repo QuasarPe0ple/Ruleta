@@ -96,7 +96,7 @@
 
     function mostrarMenu() {
       reproducirVideo(menuVideo, true);
-      btn.textContent = "Girar la ruleta";
+      btn.textContent = "GIRAR LA RULETA";
       btn.className = "btn btn-menu";
       btn.style.display = "block";
     }
@@ -109,7 +109,7 @@
     mostrarMenu();
 
     btn.addEventListener("click", () => {
-      if (btn.textContent === "Girar la ruleta") {
+      if (btn.textContent === "GIRAR LA RULETA") {
         btn.style.display = "none";
 
         reproducirVideo(ruletaVideo, false, () => {
@@ -120,7 +120,7 @@
             video.pause();
 
             setTimeout(() => {
-              btn.textContent = "Girar de nuevo";
+              btn.textContent = "IR AL INICIO";
               btn.className = "btn btn-sorteo";
               btn.style.display = "block";
             }, 2000);
