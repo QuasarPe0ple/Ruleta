@@ -78,7 +78,7 @@
 <body>
   <!-- Contenedor de videos -->
   <div id="contenedor" style="position: relative; width: 100%; height: 100%;">
-    <video id="video" autoplay loop muted playsinline preload="auto"></video>
+    <video id="video" autoplay loop muted></video>
     <button id="btn" class="btn btn-menu">Girar la ruleta</button>
   </div>
 
@@ -100,17 +100,10 @@
 
     const pausaAntesDeFinal = 2; // segundos antes de terminar
 
-    function reproducirVideo(src, loop = false, callback = null) {
-      video.src = src;
-      video.loop = loop;
-      video.muted = true; // obligatorio en móviles
-      video.load(); // forzar carga
-      video.play().catch(err => console.log("Error play:", err));
-      video.onended = callback;
-    }
-
     function mostrarMenu() {
-      reproducirVideo(menuVideo, true);
+      video.src = menuVideo;
+      video.loop = true;
+      video.play();
       btn.textContent = "Girar la ruleta";
       btn.className = "btn btn-menu";
       btn.style.display = "block";
@@ -122,10 +115,17 @@
       if (btn.textContent === "Girar la ruleta") {
         btn.style.display = "none";
 
-        reproducirVideo(ruletaVideo, false, () => {
+        video.src = ruletaVideo;
+        video.loop = false;
+        video.play();
+
+        video.onended = () => {
           const randomPremio = premios[Math.floor(Math.random() * premios.length)];
-          reproducirVideo(randomPremio, false, () => {
-            // detener en los últimos segundos
+          video.src = randomPremio;
+          video.loop = false;
+          video.play();
+
+          video.onended = () => {
             video.pause();
             video.currentTime = Math.max(0, video.duration - pausaAntesDeFinal);
             video.pause();
@@ -135,8 +135,8 @@
               btn.className = "btn btn-sorteo";
               btn.style.display = "block";
             }, 2000);
-          });
-        });
+          };
+        };
       } else {
         mostrarMenu();
       }
