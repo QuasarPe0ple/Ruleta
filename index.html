@@ -31,54 +31,39 @@
       border-radius: 15px;
       cursor: pointer;
       display: none;
-
-      /* Tipografía */
       font-family: Verdana, sans-serif;
       font-weight: bold;
-
-      /* Sombras brillantes */
       box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 30px #22c55e;
-
-      /* Animaciones */
       animation: glow 1.5s infinite alternate, bounce 2s infinite;
     }
+    .btn-menu { bottom: 100px; }
+    .btn-sorteo { bottom: 60px; }
 
-    /* Posiciones */
-    .btn-menu {
-      bottom: 100px; /* posición del botón en el menú */
-    }
-    .btn-sorteo {
-      bottom: 60px; /* un poco más abajo para "Girar de nuevo" */
-    }
-
-    /* Resplandor */
     @keyframes glow {
-      0% {
-        box-shadow: 0 0 5px #22c55e, 0 0 10px #22c55e, 0 0 20px #22c55e;
-      }
-      100% {
-        box-shadow: 0 0 20px #22c55e, 0 0 40px #22c55e, 0 0 60px #22c55e;
-      }
+      0% { box-shadow: 0 0 5px #22c55e, 0 0 10px #22c55e, 0 0 20px #22c55e; }
+      100% { box-shadow: 0 0 20px #22c55e, 0 0 40px #22c55e, 0 0 60px #22c55e; }
     }
-
-    /* Rebote */
     @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% {
-        transform: translateX(-50%) translateY(0);
-      }
-      40% {
-        transform: translateX(-50%) translateY(-10px);
-      }
-      60% {
-        transform: translateX(-50%) translateY(-5px);
-      }
+      0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+      40% { transform: translateX(-50%) translateY(-10px); }
+      60% { transform: translateX(-50%) translateY(-5px); }
     }
   </style>
 </head>
 <body>
-  <!-- Contenedor de videos -->
   <div id="contenedor" style="position: relative; width: 100%; height: 100%;">
-    <video id="video" autoplay loop muted playsinline preload="auto"></video>
+    <video id="video" autoplay loop muted playsinline preload="auto">
+      <!-- precarga para que el navegador reconozca los archivos -->
+      <source src="videos/PANTALLA_INTERBANK_Home.mp4" type="video/mp4">
+      <source src="videos/ruleta_premios.mp4" type="video/mp4">
+      <source src="videos/premio_001.mp4" type="video/mp4">
+      <source src="videos/premio_002.mp4" type="video/mp4">
+      <source src="videos/premio_003.mp4" type="video/mp4">
+      <source src="videos/premio_004.mp4" type="video/mp4">
+      <source src="videos/premio_005.mp4" type="video/mp4">
+      <source src="videos/premio_006.mp4" type="video/mp4">
+      <source src="videos/premio_007.mp4" type="video/mp4">
+    </video>
     <button id="btn" class="btn btn-menu">Girar la ruleta</button>
   </div>
 
@@ -98,14 +83,14 @@
       "videos/premio_007.mp4"
     ];
 
-    const pausaAntesDeFinal = 2; // segundos antes de terminar
+    const pausaAntesDeFinal = 2;
 
     function reproducirVideo(src, loop = false, callback = null) {
       video.src = src;
       video.loop = loop;
-      video.muted = true; // obligatorio en móviles
-      video.load(); // forzar carga
-      video.play().catch(err => console.log("Error play:", err));
+      video.muted = true;
+      video.load();
+      video.play().catch(err => console.log("Play bloqueado:", err));
       video.onended = callback;
     }
 
@@ -116,6 +101,11 @@
       btn.style.display = "block";
     }
 
+    // forzar desbloqueo en móviles al primer toque
+    document.body.addEventListener("touchstart", () => {
+      video.play().catch(()=>{});
+    }, { once: true });
+
     mostrarMenu();
 
     btn.addEventListener("click", () => {
@@ -125,7 +115,6 @@
         reproducirVideo(ruletaVideo, false, () => {
           const randomPremio = premios[Math.floor(Math.random() * premios.length)];
           reproducirVideo(randomPremio, false, () => {
-            // detener en los últimos segundos
             video.pause();
             video.currentTime = Math.max(0, video.duration - pausaAntesDeFinal);
             video.pause();
