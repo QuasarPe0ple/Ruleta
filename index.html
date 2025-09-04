@@ -19,8 +19,6 @@
       align-items: center;
       font-family: 'Aptos', sans-serif;
       font-weight: 600;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
 
     video {
@@ -45,12 +43,11 @@
       font-weight: 600;
       box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 30px #22c55e;
       animation: glow 1.5s infinite alternate, bounce 2s infinite;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
 
     .btn-menu { bottom: 100px; }
     .btn-sorteo { bottom: 60px; }
+    .btn-stock { bottom: 20px; background: #3b82f6; box-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6; }
 
     @keyframes glow {
       0% { box-shadow: 0 0 5px #22c55e, 0 0 10px #22c55e, 0 0 20px #22c55e; }
@@ -82,11 +79,13 @@
     </video>
     <div id="mensaje"></div>
     <button id="btn" class="btn btn-menu">GIRAR LA RULETA</button>
+    <button id="btnStock" class="btn btn-stock">VER STOCK</button>
   </div>
 
   <script>
     const video = document.getElementById("video");
     const btn = document.getElementById("btn");
+    const btnStock = document.getElementById("btnStock");
     const mensaje = document.getElementById("mensaje");
 
     const menuVideo = "videos/PANTALLA_INTERBANK_Home.mp4";
@@ -112,10 +111,9 @@
         localStorage.setItem(`stock_${p.nombre}`, p.stockInicial);
       });
       localStorage.setItem("ultimaReinicializacion", hoy);
-      console.log("Stock reiniciado automáticamente para hoy");
     }
 
-    // ====== Funciones para stock ======
+    // ====== Funciones de stock ======
     function obtenerStock(premio) {
       return parseInt(localStorage.getItem(`stock_${premio.nombre}`) || 0);
     }
@@ -128,45 +126,56 @@
       }
     }
 
-    // ====== Elegir premio según stock y probabilidad ======
+    // ====== Elegir premio ======
     function elegirPremio() {
       const disponibles = premios.filter(p => obtenerStock(p) > 0);
-
       if (disponibles.length === 0) {
         mensaje.textContent = "Todos los premios se han agotado. ¡Vuelve mañana!";
         mensaje.style.display = "block";
         btn.style.display = "none";
         return null;
       }
-
-      mensaje.style.display = "none"; // Oculta mensaje si hay premios
+      mensaje.style.display = "none";
       const totalProb = disponibles.reduce((sum, p) => sum + p.probabilidad, 0);
       let rnd = Math.random() * totalProb;
-
       for (let p of disponibles) {
         if (rnd < p.probabilidad) return p;
         rnd -= p.probabilidad;
       }
-
       return disponibles[disponibles.length - 1];
     }
 
-    // ====== Función para reproducir video ======
-    function reproducirVideo(src, loop = false, callback = null) {
+    // ====== Reproducir video con stop 2s antes ======
+    function reproducirVideo(src, loop = false, callback = null, stopEarly = false) {
       video.src = src;
       video.loop = loop;
       video.muted = true;
       video.load();
-      video.play().catch(err => console.log("Play bloqueado:", err));
-      video.onended = callback;
+      video.play().catch(()=>{});
+
+      if (stopEarly) {
+        video.onloadedmetadata = () => {
+          const stopTime = Math.max(0, video.duration - 2);
+          const check = setInterval(() => {
+            if (video.currentTime >= stopTime) {
+              video.pause();
+              clearInterval(check);
+              if (callback) callback();
+            }
+          }, 200);
+        };
+      } else {
+        video.onended = callback;
+      }
     }
 
-    // ====== Mostrar menú inicial ======
+    // ====== Mostrar menú ======
     function mostrarMenu() {
       reproducirVideo(menuVideo, true);
       btn.textContent = "GIRAR LA RULETA";
       btn.className = "btn btn-menu";
       btn.style.display = "block";
+      btnStock.style.display = "block";
       mensaje.style.display = "none";
     }
 
@@ -176,25 +185,29 @@
 
     mostrarMenu();
 
-    // ====== Evento click del botón ======
+    // ====== Eventos ======
     btn.addEventListener("click", () => {
       if (btn.textContent === "GIRAR LA RULETA") {
         btn.style.display = "none";
+        btnStock.style.display = "none";
         reproducirVideo(ruletaVideo, false, () => {
           const premio = elegirPremio();
           if (!premio) return;
-
           descontarStock(premio);
-
           reproducirVideo(premio.video, false, () => {
             btn.textContent = "IR AL INICIO";
             btn.className = "btn btn-sorteo";
             btn.style.display = "block";
-          });
+            btnStock.style.display = "block";
+          }, true); // detener 2s antes
         });
       } else {
         mostrarMenu();
       }
+    });
+
+    btnStock.addEventListener("click", () => {
+      window.open("stock.html", "_blank");
     });
   </script>
 </body>

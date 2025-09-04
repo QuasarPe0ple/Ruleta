@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Stock de Premios</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9fafb; }
+    h1 { color: #111; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+    th { background: #22c55e; color: white; }
+  </style>
+</head>
+<body>
+  <h1>Stock Disponible</h1>
+  <table>
+    <thead>
+      <tr><th>Premio</th><th>Stock</th></tr>
+    </thead>
+    <tbody id="tablaStock"></tbody>
+  </table>
+
+  <script>
+    const premios = [
+      "Premio 001","Premio 002","Premio 003","Premio 004","Premio 005","Premio 006","Premio 007"
+    ];
+    const tbody = document.getElementById("tablaStock");
+
+    function actualizarStock() {
+      tbody.innerHTML = "";
+      premios.forEach(nombre => {
+        const stock = localStorage.getItem(`stock_${nombre}`) || 0;
+        const fila = `<tr><td>${nombre}</td><td>${stock}</td></tr>`;
+        tbody.innerHTML += fila;
+      });
+    }
+
+    actualizarStock();
+    setInterval(actualizarStock, 2000);
+  </script>
+</body>
+</html>
