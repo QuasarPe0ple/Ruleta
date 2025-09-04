@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ruleta de Premios</title>
+
+  <!-- Agregar fuente Amika Semibold desde Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Amika:wght@600&display=swap" rel="stylesheet">
+
   <style>
     body, html {
       margin: 0;
@@ -13,12 +17,16 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      font-family: 'Amika', sans-serif; /* Aplicar la fuente */
+      font-weight: 600; /* Semibold */
     }
+
     video {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+
     .btn {
       position: absolute;
       left: 50%;
@@ -31,11 +39,12 @@
       border-radius: 15px;
       cursor: pointer;
       display: none;
-      font-family: Verdana, sans-serif;
-      font-weight: bold;
+      font-family: 'Amika', sans-serif; /* Fuente en botones */
+      font-weight: 600; /* Semibold */
       box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 30px #22c55e;
       animation: glow 1.5s infinite alternate, bounce 2s infinite;
     }
+
     .btn-menu { bottom: 100px; }
     .btn-sorteo { bottom: 60px; }
 
@@ -43,6 +52,7 @@
       0% { box-shadow: 0 0 5px #22c55e, 0 0 10px #22c55e, 0 0 20px #22c55e; }
       100% { box-shadow: 0 0 20px #22c55e, 0 0 40px #22c55e, 0 0 60px #22c55e; }
     }
+
     @keyframes bounce {
       0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
       40% { transform: translateX(-50%) translateY(-10px); }
@@ -53,7 +63,6 @@
 <body>
   <div id="contenedor" style="position: relative; width: 100%; height: 100%;">
     <video id="video" autoplay loop muted playsinline preload="auto">
-      <!-- precarga para que el navegador reconozca los archivos -->
       <source src="videos/PANTALLA_INTERBANK_Home.mp4" type="video/mp4">
       <source src="videos/ruleta_premios.mp4" type="video/mp4">
       <source src="videos/premio_001.mp4" type="video/mp4">
@@ -96,12 +105,11 @@
 
     function mostrarMenu() {
       reproducirVideo(menuVideo, true);
-      btn.textContent = "GIRAR LA RULETA";
+      btn.textContent = "GIRA LA RULETA";
       btn.className = "btn btn-menu";
       btn.style.display = "block";
     }
 
-    // forzar desbloqueo en móviles al primer toque
     document.body.addEventListener("touchstart", () => {
       video.play().catch(()=>{});
     }, { once: true });
@@ -109,7 +117,7 @@
     mostrarMenu();
 
     btn.addEventListener("click", () => {
-      if (btn.textContent === "GIRAR LA RULETA") {
+      if (btn.textContent === "GIRA LA RULETA") {
         btn.style.display = "none";
 
         reproducirVideo(ruletaVideo, false, () => {
