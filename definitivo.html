@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ruleta de Premios</title>
 
-  <!-- Fuente Aptos -->
+  <!-- Agregar fuente Aptos desde Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Aptos:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -14,24 +14,13 @@
       padding: 0;
       background: white;
       height: 100%;
-      width: 100%;
-      overflow: hidden;
-      font-family: 'Aptos', sans-serif;
-      font-weight: 600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Aptos', sans-serif; /* Aplicar Aptos */
+      font-weight: 600; /* Semibold */
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-    }
-
-    /* Contenedor principal que vamos a rotar */
-    #rotar {
-      width: 100vh;   /* usamos alto como ancho */
-      height: 100vw;  /* usamos ancho como alto */
-      transform: rotate(90deg);
-      transform-origin: left top;
-      position: absolute;
-      top: 0;
-      left: 100%;
-      background: white;
     }
 
     video {
@@ -52,8 +41,8 @@
       border-radius: 15px;
       cursor: pointer;
       display: none;
-      font-family: 'Aptos', sans-serif;
-      font-weight: 600;
+      font-family: 'Aptos', sans-serif; /* Fuente en botones */
+      font-weight: 600; /* Semibold */
       box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 30px #22c55e;
       animation: glow 1.5s infinite alternate, bounce 2s infinite;
       -webkit-font-smoothing: antialiased;
@@ -76,22 +65,19 @@
   </style>
 </head>
 <body>
-  <!-- Contenedor rotado -->
-  <div id="rotar">
-    <div id="contenedor" style="position: relative; width: 100%; height: 100%;">
-      <video id="video" autoplay loop muted playsinline preload="auto">
-        <source src="videos/PANTALLA_INTERBANK_Home.mp4" type="video/mp4">
-        <source src="videos/ruleta_premios.mp4" type="video/mp4">
-        <source src="videos/premio_001.mp4" type="video/mp4">
-        <source src="videos/premio_002.mp4" type="video/mp4">
-        <source src="videos/premio_003.mp4" type="video/mp4">
-        <source src="videos/premio_004.mp4" type="video/mp4">
-        <source src="videos/premio_005.mp4" type="video/mp4">
-        <source src="videos/premio_006.mp4" type="video/mp4">
-        <source src="videos/premio_007.mp4" type="video/mp4">
-      </video>
-      <button id="btn" class="btn btn-menu">Girar la ruleta</button>
-    </div>
+  <div id="contenedor" style="position: relative; width: 100%; height: 100%;">
+    <video id="video" autoplay loop muted playsinline preload="auto">
+      <source src="videos/PANTALLA_INTERBANK_Home.mp4" type="video/mp4">
+      <source src="videos/ruleta_premios.mp4" type="video/mp4">
+      <source src="videos/premio_001.mp4" type="video/mp4">
+      <source src="videos/premio_002.mp4" type="video/mp4">
+      <source src="videos/premio_003.mp4" type="video/mp4">
+      <source src="videos/premio_004.mp4" type="video/mp4">
+      <source src="videos/premio_005.mp4" type="video/mp4">
+      <source src="videos/premio_006.mp4" type="video/mp4">
+      <source src="videos/premio_007.mp4" type="video/mp4">
+    </video>
+    <button id="btn" class="btn btn-menu">Girar la ruleta</button>
   </div>
 
   <script>
