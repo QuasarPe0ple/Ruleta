@@ -182,7 +182,7 @@
     function reproducirVideo(src, loop = false, callback = null, onStart = null) {
       video.src = src;
       video.loop = loop;
-      video.muted = false;
+      //video.muted = false;
       video.load();
       video.play().catch(err => console.log("Play bloqueado:", err));
       if (onStart) onStart(); // Acción al iniciar
