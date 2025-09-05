@@ -14,25 +14,11 @@
       padding: 0;
       background: white;
       height: 100%;
-      width: 100%;
-      font-family: 'Aptos', sans-serif;
-      font-weight: 600;
-      overflow: hidden; /* evita scroll raro */
-    }
-
-    /* Contenedor rotado */
-    .rotado {
-      transform: rotate(90deg);
-      transform-origin: center center;
-      height: 100vw;
-      width: 100vh;
-      position: absolute;
-      top: 0;
-      left: 0;
-      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
+      font-family: 'Aptos', sans-serif;
+      font-weight: 600;
     }
 
     video {
@@ -57,7 +43,6 @@
       font-weight: 600;
       box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 30px #22c55e;
       animation: glow 1.5s infinite alternate, bounce 2s infinite;
-      z-index: 10;
     }
 
     .btn-menu { bottom: 100px; }
@@ -79,21 +64,20 @@
       position: absolute;
       top: 20px;
       right: 20px;
-      background: orange;
+      background: orange;       /* fondo naranja */
       border: none;
-      border-radius: 12px;
-      padding: 8px 12px;
+      border-radius: 12px;      /* bordes redondeados */
+      padding: 8px 12px;        /* espacio interno (hacia los lados y arriba/abajo) */
       cursor: pointer;
       display: none;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-      z-index: 10;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* sombra ligera */
     }
 
     .btn-stock img {
-      width: 28px;
+      width: 28px;   /* ajusta tamaño del icono */
       height: 28px;
       display: block;
-      margin: auto;
+      margin: auto;  /* centra la imagen */
     }
 
     /* Pantallas secundarias */
@@ -108,7 +92,6 @@
       align-items: center;
       padding: 20px;
       font-size: 22px;
-      z-index: 20;
     }
 
     .pantalla h2 {
@@ -138,34 +121,31 @@
   </style>
 </head>
 <body>
-  <!-- Todo lo visual dentro de este contenedor rotado -->
-  <div class="rotado">
-    <div id="contenedor" style="position: relative; width: 100%; height: 100%;">
-      <video id="video" autoplay muted loop playsinline preload="auto"></video>
-      <button id="btn" class="btn btn-menu">Girar la ruleta</button>
-      <button id="btnStock" class="btn-stock">
-        <img src="icons/stock.png" alt="Stock">
-      </button>
-    </div>
+  <div id="contenedor" style="position: relative; width: 100%; height: 100%;">
+    <video id="video" autoplay muted loop playsinline preload="auto"></video>
+    <button id="btn" class="btn btn-menu">Girar la ruleta</button>
+    <button id="btnStock" class="btn-stock">
+      <img src="icons/stock.png" alt="Stock">
+    </button>
+  </div>
 
-    <!-- Pantalla de stock -->
-    <div id="pantalla-stock" class="pantalla">
-      <h2>Stock disponible</h2>
-      <ul id="lista-stock"></ul>
-      <button id="btnVolver" class="btn-secundario btn-verde">Volver al inicio</button>
-      <button id="btnConfig" class="btn-secundario btn-naranja">Configurar Stock</button>
-    </div>
+  <!-- Pantalla de stock -->
+  <div id="pantalla-stock" class="pantalla">
+    <h2>Stock disponible</h2>
+    <ul id="lista-stock"></ul>
+    <button id="btnVolver" class="btn-secundario btn-verde">Volver al inicio</button>
+    <button id="btnConfig" class="btn-secundario btn-naranja">Configurar Stock</button>
+  </div>
 
-    <!-- Pantalla de configuración -->
-    <div id="pantalla-config" class="pantalla">
-      <h2>Configurar Stock Inicial</h2>
-      <form id="formStock">
-        <div id="inputsStock"></div>
-        <button type="submit" class="btn-secundario btn-verde">Guardar</button>
-      </form>
-      <button id="btnVolverConfig" class="btn-secundario btn-verde">Volver al inicio</button>
-      <button id="btnVerStockConfig" class="btn-secundario btn-naranja">Ver Stock</button>
-    </div>
+  <!-- Pantalla de configuración -->
+  <div id="pantalla-config" class="pantalla">
+    <h2>Configurar Stock Inicial</h2>
+    <form id="formStock">
+      <div id="inputsStock"></div>
+      <button type="submit" class="btn-secundario btn-verde">Guardar</button>
+    </form>
+    <button id="btnVolverConfig" class="btn-secundario btn-verde">Volver al inicio</button>
+    <button id="btnVerStockConfig" class="btn-secundario btn-naranja">Ver Stock</button>
   </div>
 
   <script>
@@ -205,8 +185,12 @@
       "videos/premio_007.mp4"
     ];
 
+    // Stock inicial (ejemplo, cámbialo por los reales)
     let stockInicial = [20, 117, 90, 90, 19, 14, 52];
+
+    // Cargar stock desde localStorage o iniciar
     let stock = JSON.parse(localStorage.getItem("stockPremios")) || [...stockInicial];
+
     const pausaAntesDeFinal = 2;
 
     function guardarStock() {
@@ -219,7 +203,7 @@
       video.muted = false;
       video.load();
       video.play().catch(err => console.log("Play bloqueado:", err));
-      if (onStart) onStart();
+      if (onStart) onStart(); // Acción al iniciar
       video.onended = callback;
     }
 
@@ -278,8 +262,9 @@
         btnStock.style.display = "none";
 
         reproducirVideo(ruletaVideo, false, () => {
+          // Selección de premio según probabilidad
           const totalPorHora = 46;
-          const probPremio1 = 7 / totalPorHora;
+          const probPremio1 = 7 / totalPorHora; // 15.2%
           const restantes = totalPorHora - 7;
 
           const sumaRestante = stock.slice(1).reduce((a,b)=>a+b,0);
@@ -289,6 +274,7 @@
             probabilidades[i] = (stock[i] / sumaRestante) * (restantes / totalPorHora);
           }
 
+          // Elegir premio
           let r = Math.random();
           let acumulado = 0, elegido = 0;
           for (let i=0; i<premios.length; i++) {
@@ -307,6 +293,7 @@
               btn.style.display = "block";
             }, 2000);
           }, () => {
+            // Al iniciar video del premio, descontar stock
             if (stock[elegido] > 0) {
               stock[elegido]--;
               guardarStock();
