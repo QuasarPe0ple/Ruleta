@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ruleta de Premios</title>
 
-  <!-- Agregar fuente Aptos desde Google Fonts -->
+  <!-- Fuente Aptos -->
   <link href="https://fonts.googleapis.com/css2?family=Aptos:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -17,10 +17,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: 'Aptos', sans-serif; /* Aplicar Aptos */
-      font-weight: 600; /* Semibold */
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      font-family: 'Aptos', sans-serif;
+      font-weight: 600;
     }
 
     video {
@@ -41,20 +39,18 @@
       border-radius: 15px;
       cursor: pointer;
       display: none;
-      font-family: 'Aptos', sans-serif; /* Fuente en botones */
-      font-weight: 600; /* Semibold */
+      font-family: 'Aptos', sans-serif;
+      font-weight: 600;
       box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e, 0 0 30px #22c55e;
       animation: glow 1.5s infinite alternate, bounce 2s infinite;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
 
     .btn-menu { bottom: 100px; }
     .btn-sorteo { bottom: 60px; }
 
     @keyframes glow {
-      0% { box-shadow: 0 0 5px #22c55e, 0 0 10px #22c55e, 0 0 20px #22c55e; }
-      100% { box-shadow: 0 0 20px #22c55e, 0 0 40px #22c55e, 0 0 60px #22c55e; }
+      0% { box-shadow: 0 0 5px #22c55e; }
+      100% { box-shadow: 0 0 20px #22c55e, 0 0 40px #22c55e; }
     }
 
     @keyframes bounce {
@@ -62,27 +58,102 @@
       40% { transform: translateX(-50%) translateY(-10px); }
       60% { transform: translateX(-50%) translateY(-5px); }
     }
+
+    /* Botón naranja Ver Stock */
+    .btn-stock {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: orange;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      display: none;
+    }
+
+    /* Pantallas secundarias */
+    .pantalla {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: white;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      font-size: 22px;
+    }
+
+    .pantalla h2 {
+      margin-bottom: 20px;
+    }
+
+    .btn-secundario {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      border: none;
+      color: white;
+    }
+
+    .btn-verde { background: #22c55e; }
+    .btn-naranja { background: orange; }
+
+    #inputsStock input {
+      margin: 5px 0;
+      padding: 8px;
+      width: 100px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
   <div id="contenedor" style="position: relative; width: 100%; height: 100%;">
-    <video id="video" autoplay loop muted playsinline preload="auto">
-      <source src="videos/PANTALLA_INTERBANK_Home.mp4" type="video/mp4">
-      <source src="videos/ruleta_premios.mp4" type="video/mp4">
-      <source src="videos/premio_001.mp4" type="video/mp4">
-      <source src="videos/premio_002.mp4" type="video/mp4">
-      <source src="videos/premio_003.mp4" type="video/mp4">
-      <source src="videos/premio_004.mp4" type="video/mp4">
-      <source src="videos/premio_005.mp4" type="video/mp4">
-      <source src="videos/premio_006.mp4" type="video/mp4">
-      <source src="videos/premio_007.mp4" type="video/mp4">
-    </video>
+    <video id="video" autoplay loop muted playsinline preload="auto"></video>
     <button id="btn" class="btn btn-menu">Girar la ruleta</button>
+    <button id="btnStock" class="btn-stock">Ver Stock</button>
+  </div>
+
+  <!-- Pantalla de stock -->
+  <div id="pantalla-stock" class="pantalla">
+    <h2>Stock disponible</h2>
+    <ul id="lista-stock"></ul>
+    <button id="btnVolver" class="btn-secundario btn-verde">Volver al inicio</button>
+    <button id="btnConfig" class="btn-secundario btn-naranja">Configurar Stock</button>
+  </div>
+
+  <!-- Pantalla de configuración -->
+  <div id="pantalla-config" class="pantalla">
+    <h2>Configurar Stock Inicial</h2>
+    <form id="formStock">
+      <div id="inputsStock"></div>
+      <button type="submit" class="btn-secundario btn-verde">Guardar</button>
+    </form>
+    <button id="btnVolverConfig" class="btn-secundario btn-verde">Volver al inicio</button>
+    <button id="btnVerStockConfig" class="btn-secundario btn-naranja">Ver Stock</button>
   </div>
 
   <script>
     const video = document.getElementById("video");
     const btn = document.getElementById("btn");
+    const btnStock = document.getElementById("btnStock");
+    const pantallaStock = document.getElementById("pantalla-stock");
+    const listaStock = document.getElementById("lista-stock");
+    const btnVolver = document.getElementById("btnVolver");
+    const btnConfig = document.getElementById("btnConfig");
+    const pantallaConfig = document.getElementById("pantalla-config");
+    const formStock = document.getElementById("formStock");
+    const inputsStock = document.getElementById("inputsStock");
+    const btnVolverConfig = document.getElementById("btnVolverConfig");
+    const btnVerStockConfig = document.getElementById("btnVerStockConfig");
 
     const menuVideo = "videos/PANTALLA_INTERBANK_Home.mp4";
     const ruletaVideo = "videos/ruleta_premios.mp4";
@@ -96,14 +167,25 @@
       "videos/premio_007.mp4"
     ];
 
+    // Stock inicial (ejemplo, cámbialo por los reales)
+    let stockInicial = [100, 90, 38, 14, 14, 20, 30];
+
+    // Cargar stock desde localStorage o iniciar
+    let stock = JSON.parse(localStorage.getItem("stockPremios")) || [...stockInicial];
+
     const pausaAntesDeFinal = 2;
 
-    function reproducirVideo(src, loop = false, callback = null) {
+    function guardarStock() {
+      localStorage.setItem("stockPremios", JSON.stringify(stock));
+    }
+
+    function reproducirVideo(src, loop = false, callback = null, onStart = null) {
       video.src = src;
       video.loop = loop;
       video.muted = true;
       video.load();
       video.play().catch(err => console.log("Play bloqueado:", err));
+      if (onStart) onStart(); // Acción al iniciar
       video.onended = callback;
     }
 
@@ -112,7 +194,43 @@
       btn.textContent = "GIRA LA RULETA";
       btn.className = "btn btn-menu";
       btn.style.display = "block";
+      btnStock.style.display = "block";
+      pantallaStock.style.display = "none";
+      pantallaConfig.style.display = "none";
     }
+
+    function mostrarStock() {
+      listaStock.innerHTML = "";
+      stock.forEach((s, i) => {
+        listaStock.innerHTML += `<li>Premio ${i+1}: ${s}</li>`;
+      });
+      pantallaStock.style.display = "flex";
+    }
+
+    function mostrarConfig() {
+      inputsStock.innerHTML = "";
+      stock.forEach((s, i) => {
+        inputsStock.innerHTML += `
+          <label>Premio ${i+1}: 
+            <input type="number" value="${s}" min="0" id="input${i}">
+          </label><br>
+        `;
+      });
+      pantallaConfig.style.display = "flex";
+    }
+
+    btnStock.addEventListener("click", mostrarStock);
+    btnVolver.addEventListener("click", mostrarMenu);
+    btnConfig.addEventListener("click", mostrarConfig);
+    btnVerStockConfig.addEventListener("click", mostrarStock);
+    btnVolverConfig.addEventListener("click", mostrarMenu);
+
+    formStock.addEventListener("submit", (e) => {
+      e.preventDefault();
+      stock = stock.map((s, i) => parseInt(document.getElementById(`input${i}`).value));
+      guardarStock();
+      mostrarMenu();
+    });
 
     document.body.addEventListener("touchstart", () => {
       video.play().catch(()=>{});
@@ -123,10 +241,30 @@
     btn.addEventListener("click", () => {
       if (btn.textContent === "GIRA LA RULETA") {
         btn.style.display = "none";
+        btnStock.style.display = "none";
 
         reproducirVideo(ruletaVideo, false, () => {
-          const randomPremio = premios[Math.floor(Math.random() * premios.length)];
-          reproducirVideo(randomPremio, false, () => {
+          // Selección de premio según probabilidad
+          const totalPorHora = 46;
+          const probPremio1 = 7 / totalPorHora; // 15.2%
+          const restantes = totalPorHora - 7;
+
+          const sumaRestante = stock.slice(1).reduce((a,b)=>a+b,0);
+          let probabilidades = [probPremio1];
+
+          for (let i=1; i<stock.length; i++) {
+            probabilidades[i] = (stock[i] / sumaRestante) * (restantes / totalPorHora);
+          }
+
+          // Elegir premio
+          let r = Math.random();
+          let acumulado = 0, elegido = 0;
+          for (let i=0; i<premios.length; i++) {
+            acumulado += probabilidades[i];
+            if (r <= acumulado) { elegido = i; break; }
+          }
+
+          reproducirVideo(premios[elegido], false, () => {
             video.pause();
             video.currentTime = Math.max(0, video.duration - pausaAntesDeFinal);
             video.pause();
@@ -136,6 +274,12 @@
               btn.className = "btn btn-sorteo";
               btn.style.display = "block";
             }, 2000);
+          }, () => {
+            // Al iniciar video del premio, descontar stock
+            if (stock[elegido] > 0) {
+              stock[elegido]--;
+              guardarStock();
+            }
           });
         });
       } else {
