@@ -74,7 +74,7 @@
       60% { transform: translateX(-50%) translateY(-5px); }
     }
 
-    /* Botón Ver Stock */
+    /* Botón naranja Ver Stock */
     .btn-stock {
       position: absolute;
       top: 20px;
@@ -223,14 +223,15 @@
     function mostrarMenu() {
       reproducirVideo(menuVideo, true);
 
-      // ✅ Verificar si aún queda stock
-      const totalStock = stock.reduce((a,b)=>a+b,0);
-      if (totalStock > 0) {
+      // 🔹 Verificar si hay stock
+      const hayStock = stock.some(s => s > 0);
+
+      if (hayStock) {
         btn.textContent = "GIRA LA RULETA";
         btn.className = "btn btn-menu";
         btn.style.display = "block";
       } else {
-        btn.style.display = "none"; // No mostrar más el botón
+        btn.style.display = "none"; // ocultar botón
       }
 
       btnStock.style.display = "block";
@@ -307,9 +308,7 @@
             video.pause();
 
             setTimeout(() => {
-              btn.textContent = "IR AL INICIO";
-              btn.className = "btn btn-sorteo";
-              btn.style.display = "block";
+              mostrarMenu(); // volver y revisar stock
             }, 2000);
           }, () => {
             if (stock[elegido] > 0) {

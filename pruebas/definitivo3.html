@@ -160,7 +160,7 @@
       <button type="submit" class="btn-secundario btn-verde">Guardar</button>
     </form>
     <button id="btnVolverConfig" class="btn-secundario btn-verde">Volver al inicio</button>
-    <button id="btnVerStockConfig" class="btn-secundario btn-naranja">Ver Stock</button>
+  <button id="btnVerStockConfig" class="btn-secundario btn-naranja">Ver Stock</button>
   </div>
 
   <script>
@@ -222,17 +222,9 @@
 
     function mostrarMenu() {
       reproducirVideo(menuVideo, true);
-
-      // ✅ Verificar si aún queda stock
-      const totalStock = stock.reduce((a,b)=>a+b,0);
-      if (totalStock > 0) {
-        btn.textContent = "GIRA LA RULETA";
-        btn.className = "btn btn-menu";
-        btn.style.display = "block";
-      } else {
-        btn.style.display = "none"; // No mostrar más el botón
-      }
-
+      btn.textContent = "GIRA LA RULETA";
+      btn.className = "btn btn-menu";
+      btn.style.display = "block";
       btnStock.style.display = "block";
       pantallaStock.style.display = "none";
       pantallaConfig.style.display = "none";
