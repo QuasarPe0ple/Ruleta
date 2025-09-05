@@ -40,7 +40,6 @@
       width: 85%;
       height: 85%;
       object-fit: cover;
-      background: black;
     }
 
     .btn {
@@ -75,7 +74,7 @@
       60% { transform: translateX(-50%) translateY(-5px); }
     }
 
-    /* Botón naranja Ver Stock */
+    /* Botón Ver Stock */
     .btn-stock {
       position: absolute;
       top: 20px;
@@ -108,7 +107,6 @@
       align-items: center;
       padding: 20px;
       font-size: 22px;
-      color: #111;
     }
 
     .pantalla h2 {
@@ -141,7 +139,7 @@
   <div id="contenedor">
     <video id="video" autoplay muted loop playsinline preload="auto"></video>
     <button id="btn" class="btn btn-menu">Girar la ruleta</button>
-    <button id="btnStock" class="btn-stock" title="Ver stock">
+    <button id="btnStock" class="btn-stock">
       <img src="icons/stock2.png" alt="Stock">
     </button>
   </div>
@@ -150,10 +148,8 @@
   <div id="pantalla-stock" class="pantalla">
     <h2>Stock disponible</h2>
     <ul id="lista-stock"></ul>
-    <div style="display:flex;gap:12px;">
-      <button id="btnVolver" class="btn-secundario btn-verde">Volver al inicio</button>
-      <button id="btnConfig" class="btn-secundario btn-naranja">Configurar Stock</button>
-    </div>
+    <button id="btnVolver" class="btn-secundario btn-verde">Volver al inicio</button>
+    <button id="btnConfig" class="btn-secundario btn-naranja">Configurar Stock</button>
   </div>
 
   <!-- Pantalla de configuración -->
@@ -163,10 +159,8 @@
       <div id="inputsStock"></div>
       <button type="submit" class="btn-secundario btn-verde">Guardar</button>
     </form>
-    <div style="margin-top:12px; display:flex; gap:12px;">
-      <button id="btnVolverConfig" class="btn-secundario btn-verde">Volver al inicio</button>
-      <button id="btnVerStockConfig" class="btn-secundario btn-naranja">Ver Stock</button>
-    </div>
+    <button id="btnVolverConfig" class="btn-secundario btn-verde">Volver al inicio</button>
+    <button id="btnVerStockConfig" class="btn-secundario btn-naranja">Ver Stock</button>
   </div>
 
   <script>
@@ -210,43 +204,33 @@
     let stockInicial = [40, 117, 90, 90, 19, 14, 52];
     let stock = JSON.parse(localStorage.getItem("stockPremios")) || [...stockInicial];
 
-    const pausaAntesDeFinal = 2; // segundos para mostrar el frame final
+    const pausaAntesDeFinal = 2;
 
     function guardarStock() {
       localStorage.setItem("stockPremios", JSON.stringify(stock));
     }
 
-    function reproducirVideo(src, loop = false, onEnded = null, onStart = null) {
-      video.onended = null;
-      video.onplay = null;
+    function reproducirVideo(src, loop = false, callback = null, onStart = null) {
       video.src = src;
-      video.loop = !!loop;
+      video.loop = loop;
       video.muted = false;
       video.load();
       video.play().catch(err => console.log("Play bloqueado:", err));
-
-      if (typeof onStart === "function") {
-        setTimeout(() => { try { onStart(); } catch (e) { console.error(e); } }, 50);
-      }
-
-      video.onended = function() {
-        if (typeof onEnded === "function") {
-          try { onEnded(); } catch (e) { console.error(e); }
-        }
-      };
+      if (onStart) onStart();
+      video.onended = callback;
     }
 
     function mostrarMenu() {
       reproducirVideo(menuVideo, true);
 
+      // ✅ Verificar si aún queda stock
       const totalStock = stock.reduce((a,b)=>a+b,0);
-
       if (totalStock > 0) {
         btn.textContent = "GIRA LA RULETA";
         btn.className = "btn btn-menu";
         btn.style.display = "block";
       } else {
-        btn.style.display = "none";
+        btn.style.display = "none"; // No mostrar más el botón
       }
 
       btnStock.style.display = "block";
@@ -282,10 +266,7 @@
 
     formStock.addEventListener("submit", (e) => {
       e.preventDefault();
-      stock = stock.map((s, i) => {
-        const val = parseInt(document.getElementById(`input${i}`).value);
-        return isNaN(val) ? 0 : val;
-      });
+      stock = stock.map((s, i) => parseInt(document.getElementById(`input${i}`).value));
       guardarStock();
       mostrarMenu();
     });
@@ -302,61 +283,41 @@
         btnStock.style.display = "none";
 
         reproducirVideo(ruletaVideo, false, () => {
-          const indicesDisponibles = stock
-            .map((s,i) => ({ i, s }))
-            .filter(x => x.s > 0)
-            .map(x => x.i);
+          const totalPorHora = 46;
+          const probPremio1 = 7 / totalPorHora;
+          const restantes = totalPorHora - 7;
 
-          if (indicesDisponibles.length === 0) {
-            mostrarMenu();
-            return;
+          const sumaRestante = stock.slice(1).reduce((a,b)=>a+b,0);
+          let probabilidades = [probPremio1];
+
+          for (let i=1; i<stock.length; i++) {
+            probabilidades[i] = (stock[i] / sumaRestante) * (restantes / totalPorHora);
           }
 
-          const pesos = new Array(stock.length).fill(0);
-          if (stock[0] > 0) pesos[0] = 7;
-          for (let k = 1; k < stock.length; k++) {
-            if (stock[k] > 0) pesos[k] = stock[k];
-          }
-
-          let sumaPesos = 0;
-          indicesDisponibles.forEach(idx => sumaPesos += pesos[idx]);
-
-          if (sumaPesos === 0) {
-            indicesDisponibles.forEach(idx => sumaPesos += stock[idx]);
-            if (sumaPesos === 0) { mostrarMenu(); return; }
-            indicesDisponibles.forEach(idx => pesos[idx] = stock[idx]);
-          }
-
-          const r = Math.random() * sumaPesos;
-          let acc = 0;
-          let elegido = indicesDisponibles[0];
-          for (let idx of indicesDisponibles) {
-            acc += pesos[idx];
-            if (r <= acc) { elegido = idx; break; }
-          }
-
-          if (stock[elegido] > 0) {
-            stock[elegido]--;
-            guardarStock();
+          let r = Math.random();
+          let acumulado = 0, elegido = 0;
+          for (let i=0; i<premios.length; i++) {
+            acumulado += probabilidades[i];
+            if (r <= acumulado) { elegido = i; break; }
           }
 
           reproducirVideo(premios[elegido], false, () => {
-            try {
-              video.pause();
-              if (!isNaN(video.duration) && video.duration > 0) {
-                video.currentTime = Math.max(0, video.duration - pausaAntesDeFinal);
-              }
-              video.pause();
-            } catch (e) {}
+            video.pause();
+            video.currentTime = Math.max(0, video.duration - pausaAntesDeFinal);
+            video.pause();
 
             setTimeout(() => {
               btn.textContent = "IR AL INICIO";
               btn.className = "btn btn-sorteo";
               btn.style.display = "block";
-            }, 1200);
+            }, 2000);
+          }, () => {
+            if (stock[elegido] > 0) {
+              stock[elegido]--;
+              guardarStock();
+            }
           });
         });
-
       } else {
         mostrarMenu();
       }
