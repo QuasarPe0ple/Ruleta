@@ -14,26 +14,11 @@
       padding: 0;
       background: white;
       height: 100%;
-      width: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
       font-family: 'Aptos', sans-serif;
       font-weight: 600;
-      overflow: hidden; /* evita scrolls */
-    }
-
-    /* 🔹 Contenedor rotado para simular portrait en TV */
-    #contenedor {
-      position: relative;
-      width: 100vh;   /* usar viewport height como ancho */
-      height: 100vw;  /* usar viewport width como alto */
-      transform: rotate(90deg);
-      transform-origin: center center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
     }
 
     video {
@@ -79,20 +64,20 @@
       position: absolute;
       top: 20px;
       right: 20px;
-      background: orange;
+      background: orange;       /* fondo naranja */
       border: none;
-      border-radius: 12px;
-      padding: 8px 12px;
+      border-radius: 12px;      /* bordes redondeados */
+      padding: 8px 12px;        /* espacio interno (hacia los lados y arriba/abajo) */
       cursor: pointer;
       display: none;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* sombra ligera */
     }
 
     .btn-stock img {
-      width: 28px;
+      width: 28px;   /* ajusta tamaño del icono */
       height: 28px;
       display: block;
-      margin: auto;
+      margin: auto;  /* centra la imagen */
     }
 
     /* Pantallas secundarias */
@@ -136,7 +121,7 @@
   </style>
 </head>
 <body>
-  <div id="contenedor">
+  <div id="contenedor" style="position: relative; width: 100%; height: 100%;">
     <video id="video" autoplay muted loop playsinline preload="auto"></video>
     <button id="btn" class="btn btn-menu">Girar la ruleta</button>
     <button id="btnStock" class="btn-stock">
@@ -200,8 +185,10 @@
       "videos/premio_007.mp4"
     ];
 
-    // Stock inicial
+    // Stock inicial (ejemplo, cámbialo por los reales)
     let stockInicial = [20, 117, 90, 90, 19, 14, 52];
+
+    // Cargar stock desde localStorage o iniciar
     let stock = JSON.parse(localStorage.getItem("stockPremios")) || [...stockInicial];
 
     const pausaAntesDeFinal = 2;
@@ -216,7 +203,7 @@
       video.muted = false;
       video.load();
       video.play().catch(err => console.log("Play bloqueado:", err));
-      if (onStart) onStart();
+      if (onStart) onStart(); // Acción al iniciar
       video.onended = callback;
     }
 
@@ -275,8 +262,9 @@
         btnStock.style.display = "none";
 
         reproducirVideo(ruletaVideo, false, () => {
+          // Selección de premio según probabilidad
           const totalPorHora = 46;
-          const probPremio1 = 7 / totalPorHora;
+          const probPremio1 = 7 / totalPorHora; // 15.2%
           const restantes = totalPorHora - 7;
 
           const sumaRestante = stock.slice(1).reduce((a,b)=>a+b,0);
@@ -286,6 +274,7 @@
             probabilidades[i] = (stock[i] / sumaRestante) * (restantes / totalPorHora);
           }
 
+          // Elegir premio
           let r = Math.random();
           let acumulado = 0, elegido = 0;
           for (let i=0; i<premios.length; i++) {
@@ -304,6 +293,7 @@
               btn.style.display = "block";
             }, 2000);
           }, () => {
+            // Al iniciar video del premio, descontar stock
             if (stock[elegido] > 0) {
               stock[elegido]--;
               guardarStock();
